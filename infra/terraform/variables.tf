@@ -62,3 +62,58 @@ variable "ssh_public_key_path" {
   description = "Caminho da chave pública SSH."
   default     = "~/.ssh/id_rsa.pub"
 }
+
+variable "postgresql_server_name" {
+  type        = string
+  description = "Nome globalmente unico do Azure Database for PostgreSQL Flexible Server."
+}
+
+variable "postgresql_database_name" {
+  type        = string
+  description = "Nome do banco de dados da aplicacao."
+  default     = "casa_church"
+}
+
+variable "postgresql_admin_login" {
+  type        = string
+  description = "Usuario administrador do PostgreSQL."
+  default     = "casachurchadmin"
+}
+
+variable "postgresql_admin_password" {
+  type        = string
+  description = "Senha do usuario administrador do PostgreSQL."
+  sensitive   = true
+
+  validation {
+    condition     = length(var.postgresql_admin_password) >= 12
+    error_message = "A senha do PostgreSQL deve ter pelo menos 12 caracteres."
+  }
+}
+
+variable "postgresql_version" {
+  type        = string
+  description = "Versao do PostgreSQL Flexible Server."
+  default     = "16"
+}
+
+variable "postgresql_sku_name" {
+  type        = string
+  description = "SKU do PostgreSQL Flexible Server."
+  default     = "B_Standard_B1ms"
+}
+
+variable "postgresql_storage_mb" {
+  type        = number
+  description = "Armazenamento do PostgreSQL Flexible Server em MB."
+  default     = 32768
+}
+
+variable "postgresql_firewall_rules" {
+  type = map(object({
+    start_ip_address = string
+    end_ip_address   = string
+  }))
+  description = "Regras de firewall para acesso publico ao PostgreSQL."
+  default     = {}
+}

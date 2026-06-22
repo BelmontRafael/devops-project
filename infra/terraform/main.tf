@@ -33,3 +33,18 @@ module "frontend_vm" {
   ssh_public_key_path = var.ssh_public_key_path
   subnet_id           = module.network.frontend_subnet_id
 }
+
+module "database" {
+  source = "./modules/database"
+
+  server_name         = var.postgresql_server_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  database_name       = var.postgresql_database_name
+  admin_login         = var.postgresql_admin_login
+  admin_password      = var.postgresql_admin_password
+  postgresql_version  = var.postgresql_version
+  sku_name            = var.postgresql_sku_name
+  storage_mb          = var.postgresql_storage_mb
+  firewall_rules      = var.postgresql_firewall_rules
+}
