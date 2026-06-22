@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa-church-api-service
+  namespace: casa-church
+spec:
+  type: ClusterIP
+  selector:
+    app: casa-church-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
