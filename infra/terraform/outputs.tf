@@ -33,3 +33,11 @@ output "postgresql_database_name" {
 output "postgresql_admin_login" {
   value = module.database.admin_login
 }
+
+output "aks_cluster_name" {
+  value = module.aks.cluster_name
+}
+
+output "aks_kubelet_identity_object_id" {
+  value = module.aks.kubelet_identity_object_id
+}

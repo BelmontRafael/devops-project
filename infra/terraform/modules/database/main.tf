@@ -14,6 +14,12 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
 
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
+
+  lifecycle {
+    ignore_changes = [
+      zone,
+    ]
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_database" "app" {

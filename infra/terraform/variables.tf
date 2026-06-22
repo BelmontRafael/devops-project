@@ -117,3 +117,28 @@ variable "postgresql_firewall_rules" {
   description = "Regras de firewall para acesso publico ao PostgreSQL."
   default     = {}
 }
+
+variable "aks_cluster_name" {
+  type        = string
+  description = "Nome do cluster AKS."
+  default     = "aks-casa-church"
+}
+
+variable "aks_dns_prefix" {
+  type        = string
+  description = "Prefixo DNS do cluster AKS."
+  default     = "aks-casa-church"
+}
+
+variable "aks_node_count" {
+  type        = number
+  description = "Quantidade de worker nodes no node pool padrao."
+  default     = 2
+}
+
+variable "aks_node_vm_size" {
+  type        = string
+  description = "Tamanho das VMs dos worker nodes do AKS."
+  default     = "Standard_D2s_v3"
+}
+

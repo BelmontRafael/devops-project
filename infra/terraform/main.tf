@@ -48,3 +48,15 @@ module "database" {
   storage_mb          = var.postgresql_storage_mb
   firewall_rules      = var.postgresql_firewall_rules
 }
+
+module "aks" {
+  source = "./modules/aks"
+
+  cluster_name        = var.aks_cluster_name
+  dns_prefix          = var.aks_dns_prefix
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  node_count          = var.aks_node_count
+  node_vm_size        = var.aks_node_vm_size
+  acr_id              = module.acr.id
+}
