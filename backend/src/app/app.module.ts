@@ -18,6 +18,7 @@ import { LocationsModule } from "src/locations/locations.module";
 import { LessonProgressModule } from "src/lesson-progress/lesson-progress.module";
 import { EventFeedbacksModule } from "src/event-feedbacks/event-feedbacks.module";
 import { UserActivityModule } from "src/user-activity/user-activity.module";
+import { HealthModule } from "src/health/health.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UserActivityModule } from "src/user-activity/user-activity.module";
     LocationsModule,
     EventFeedbacksModule,
     UserActivityModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
