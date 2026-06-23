@@ -1,0 +1,74 @@
+---
+- name: Deploy do frontend na VM da Azure
+  hosts: frontend
+  become: true
+
+  vars:
+    frontend_image: "{{ acr_login_server }}/casa-church-frontend:dev"
+    frontend_container_name: casa-church-frontend
+    frontend_port: 80
+
+  tasks:
+    - name: Validar variaveis obrigatorias
+      fail:
+        msg: "Informe acr_name e acr_login_server usando -e."
+      when: acr_name is not defined or acr_login_server is not defined
+
+    - name: Atualizar pacotes do sistema
+      apt:
+        update_cache: yes
+
+    - name: Instalar dependencias necessarias
+      apt:
+        name:
+          - docker.io
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: Garantir que o Docker esta ativo
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Instalar Azure CLI
+      shell: |
+        if ! command -v az >/dev/null 2>&1; then
+          curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Autenticar na Azure com a identidade gerenciada da VM
+      shell: az login --identity
+
+    - name: Autenticar Docker no Azure Container Registry
+      shell: az acr login --name {{ acr_name }}
+
+    - name: Baixar imagem Docker do frontend
+      shell: docker pull {{ frontend_image }}
+
+    - name: Remover container antigo do frontend
+      shell: docker rm -f {{ frontend_container_name }} || true
+
+    - name: Subir container do frontend
+      shell: |
+        docker run -d \
+          --name {{ frontend_container_name }} \
+          --restart unless-stopped \
+          -p {{ frontend_port }}:80 \
+          {{ frontend_image }}
+
+    - name: Validar frontend na VM
+      uri:
+        url: http://127.0.0.1:{{ frontend_port }}
+        status_code: 200
+
+    - name: Exibir containers em execucao
+      shell: docker ps
+      register: containers_result
+
+    - name: Mostrar containers em execucao
+      debug:
+        var: containers_result.stdout_lines
