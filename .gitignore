@@ -16,3 +16,10 @@
 # Terraform plans
 **/*.tfplan
 **/tfplan
+
+# Kubernetes local secrets
+infra/kubernetes/**/*secret.yaml
+!infra/kubernetes/**/*secret.example.yaml
+
+# Ansible local inventory
+infra/ansible/hosts.ini

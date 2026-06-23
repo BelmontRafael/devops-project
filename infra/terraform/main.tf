@@ -34,6 +34,12 @@ module "frontend_vm" {
   subnet_id           = module.network.frontend_subnet_id
 }
 
+resource "azurerm_role_assignment" "frontend_vm_acr_pull" {
+  scope                = module.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = module.frontend_vm.principal_id
+}
+
 module "database" {
   source = "./modules/database"
 

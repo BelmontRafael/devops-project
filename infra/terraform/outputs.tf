@@ -18,6 +18,10 @@ output "frontend_vm_name" {
   value = module.frontend_vm.vm_name
 }
 
+output "frontend_vm_principal_id" {
+  value = module.frontend_vm.principal_id
+}
+
 output "postgresql_server_name" {
   value = module.database.server_name
 }
