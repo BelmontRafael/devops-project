@@ -1,0 +1,90 @@
+---
+- name: Aplicacao dos manifests Kubernetes no cluster AKS
+  hosts: localhost
+  connection: local
+
+  vars:
+    k8s_namespace: casa-church
+    project_root: "{{ playbook_dir }}/../../.."
+    manifest_dir: "{{ project_root }}/infra/kubernetes"
+
+  tasks:
+    - name: Verificar acesso ao AKS
+      shell: kubectl get nodes
+
+    - name: Verificar se o Secret da API existe
+      stat:
+        path: "{{ manifest_dir }}/secret.yaml"
+      register: secret_file
+
+    - name: Falhar se o Secret da API nao existir
+      fail:
+        msg: "Crie {{ manifest_dir }}/secret.yaml a partir de secret.example.yaml antes do deploy."
+      when: not secret_file.stat.exists
+
+    - name: Aplicar Namespace
+      shell: kubectl apply -f "{{ manifest_dir }}/namespace.yaml"
+
+    - name: Aplicar ResourceQuota
+      shell: kubectl apply -f "{{ manifest_dir }}/resource-quota.yaml"
+
+    - name: Aplicar LimitRange
+      shell: kubectl apply -f "{{ manifest_dir }}/limit-range.yaml"
+
+    - name: Aplicar ConfigMap da API
+      shell: kubectl apply -f "{{ manifest_dir }}/configmap.yaml"
+
+    - name: Aplicar Secret da API
+      shell: kubectl apply -f "{{ manifest_dir }}/secret.yaml"
+
+    - name: Aplicar Deployment da API
+      shell: kubectl apply -f "{{ manifest_dir }}/deployment.yaml"
+
+    - name: Aplicar Service da API
+      shell: kubectl apply -f "{{ manifest_dir }}/service.yaml"
+
+    - name: Aplicar Ingress da API
+      shell: kubectl apply -f "{{ manifest_dir }}/ingress.yaml"
+
+    - name: Aplicar HPA da API
+      shell: kubectl apply -f "{{ manifest_dir }}/hpa.yaml"
+
+    - name: Verificar pods do namespace
+      shell: kubectl get pods -n "{{ k8s_namespace }}"
+      register: pods_result
+
+    - name: Exibir pods criados
+      debug:
+        var: pods_result.stdout_lines
+
+    - name: Verificar services do namespace
+      shell: kubectl get svc -n "{{ k8s_namespace }}"
+      register: services_result
+
+    - name: Exibir services criados
+      debug:
+        var: services_result.stdout_lines
+
+    - name: Verificar HPA da API
+      shell: kubectl get hpa -n "{{ k8s_namespace }}"
+      register: hpa_result
+
+    - name: Exibir HPA criado
+      debug:
+        var: hpa_result.stdout_lines
+
+    - name: Verificar ingress da API
+      shell: kubectl get ingress -n "{{ k8s_namespace }}"
+      register: ingress_result
+
+    - name: Exibir ingress criado
+      debug:
+        var: ingress_result.stdout_lines
+
+    - name: Validar health check da API no AKS
+      shell: kubectl run curl-test -n "{{ k8s_namespace }}" --rm -i --image=curlimages/curl --restart=Never -- curl -s http://casa-church-api-service/health
+      register: api_health_result
+
+    - name: Exibir resultado do health check
+      debug:
+        var: api_health_result.stdout_lines
