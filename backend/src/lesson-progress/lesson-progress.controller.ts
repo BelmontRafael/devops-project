@@ -18,7 +18,6 @@ import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { FindLessonProgressDto } from "./dto/find-lesson-progress-query.dto";
 import { ApiOperation } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @UseGuards(AuthTokenGuard)
@@ -41,7 +40,6 @@ export class LessonProgressController {
 
   @ApiOperation({ summary: "Listar os progressos de aula." })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(
     @TokenPayloadParam() tokenPayLoad: TokenPayloadDto,
     @Query() findLessonProgressDto: FindLessonProgressDto

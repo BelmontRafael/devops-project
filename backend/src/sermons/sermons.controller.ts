@@ -17,7 +17,6 @@ import { UseGuards } from "@nestjs/common";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { FindSermonQueryDto } from "./dto/find-sermon-query.dto";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
@@ -39,14 +38,12 @@ export class SermonsController {
 
   @ApiOperation({ summary: "Listar todos os sermões" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findSermonQueryDto: FindSermonQueryDto) {
     return this.sermonsService.findAll(findSermonQueryDto);
   }
 
   @ApiOperation({ summary: "Listar detalhes de um sermão específico" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.sermonsService.findOne(id);
   }

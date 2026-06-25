@@ -16,7 +16,6 @@ import { CreateContactMessageDto } from "./dto/create-contact-message.dto";
 import { UpdateContactMessageDto } from "./dto/update-contact-message.dto";
 import { AuthTokenGuard } from "src/auth/guard/auth-token.guard";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { FindContactMessagesQueryDto } from "./dto/find-contact-messages-query.dto";
@@ -39,7 +38,6 @@ export class ContactMessagesController {
 
   @ApiOperation({ summary: "Listar todas as mensagens do fórum de discussão" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findContactMessagesQuery: FindContactMessagesQueryDto) {
     return this.contactMessagesService.findAll(findContactMessagesQuery);
   }
@@ -48,7 +46,6 @@ export class ContactMessagesController {
     summary: "Listar detalhes de uma mensagem do fórum de discussão",
   })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.contactMessagesService.findOne(id);
   }

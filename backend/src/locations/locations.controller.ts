@@ -17,7 +17,6 @@ import { AuthTokenGuard } from "src/auth/guard/auth-token.guard";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { FindLocationsQueryDto } from "./dto/find-locations-query.dto";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
@@ -39,14 +38,12 @@ export class LocationsController {
 
   @ApiOperation({ summary: "Listar todos os locais" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findLocationsQuery: FindLocationsQueryDto) {
     return this.locationsService.findAll(findLocationsQuery);
   }
 
   @ApiOperation({ summary: "Listar detalhes de um local específico" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.locationsService.findOne(id);
   }

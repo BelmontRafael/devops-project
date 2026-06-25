@@ -14,7 +14,6 @@ import { FindUserActivityQueryDto } from "./dto/find-user-activity-query.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
 import { AuthTokenGuard } from "src/auth/guard/auth-token.guard";
 import { UseGuards } from "@nestjs/common";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @ApiSecurity("auth-token")
@@ -32,14 +31,12 @@ export class UserActivityController {
 
   @ApiOperation({ summary: "Listar todas as atividades registradas" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() query: FindUserActivityQueryDto) {
     return this.userActivityService.findAll(query);
   }
 
   @ApiOperation({ summary: "Listar detalhes de uma atividade específica" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.userActivityService.findOne(id);
   }

@@ -18,7 +18,6 @@ import { AuthTokenGuard } from "src/auth/guard/auth-token.guard";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { ApiSecurity, ApiOperation } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @UseInterceptors(UserActivityInterceptor)
@@ -38,7 +37,6 @@ export class UsersController {
   @ApiSecurity("auth-token")
   @UseGuards(AuthTokenGuard)
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findUsersQuery: FindUsersQueryDto) {
     return this.usersService.findAll(findUsersQuery);
   }
@@ -47,7 +45,6 @@ export class UsersController {
   @ApiSecurity("auth-token")
   @UseGuards(AuthTokenGuard)
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.usersService.findOne(id);
   }

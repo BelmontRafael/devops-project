@@ -17,7 +17,6 @@ import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
 import { FindCommentsQueryDto } from "./dto/find-comments-query.dto";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @ApiSecurity("auth-token")
@@ -38,14 +37,12 @@ export class CommentsController {
 
   @ApiOperation({ summary: "Listar todos comentários" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findCommentsQuery: FindCommentsQueryDto) {
     return this.commentsService.findAll(findCommentsQuery);
   }
 
   @ApiOperation({ summary: "Visualizar detalhes de um comentário" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.commentsService.findOne(id);
   }

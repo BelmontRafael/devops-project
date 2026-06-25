@@ -18,7 +18,6 @@ import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { FindRegistrationsQueryDto } from "./dto/find-registrations-query.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @ApiSecurity("auth-token")
@@ -45,7 +44,6 @@ export class RegistrationsController {
       "Listar todas as inscrições (obs: admins podem listar de todos os usuários)",
   })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(
     @TokenPayloadParam() tokenPayload: TokenPayloadDto,
     @Query() findRegistrationsQuery: FindRegistrationsQueryDto
@@ -60,7 +58,6 @@ export class RegistrationsController {
     summary: "Listar detalhes de uma inscrição específica",
   })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(
     @Param("id") id: string,
     @TokenPayloadParam() tokenPayload: TokenPayloadDto

@@ -15,7 +15,6 @@ import { AuthTokenGuard } from "src/auth/guard/auth-token.guard";
 import { TokenPayloadParam } from "src/auth/params/token-payload.param";
 import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { FindEventFeedbacksQueryDto } from "./dto/find-event-feedbacks-query.dto";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
@@ -40,14 +39,12 @@ export class EventFeedbacksController {
 
   @ApiOperation({ summary: "Listar todos os feedbacks de eventos" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findEventFeedbacksQuery: FindEventFeedbacksQueryDto) {
     return this.eventFeedbacksService.findAll(findEventFeedbacksQuery);
   }
 
   @ApiOperation({ summary: "Listar detalhes de um feedbacks específico" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.eventFeedbacksService.findOne(id);
   }

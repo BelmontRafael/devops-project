@@ -18,7 +18,6 @@ import { TokenPayloadDto } from "src/auth/dto/token-payload.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 
 import { ApiOperation, ApiSecurity } from "@nestjs/swagger";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UserActivityInterceptor } from "src/common/interceptors/user-activity.interceptor";
 
 @ApiSecurity("auth-token")
@@ -39,14 +38,12 @@ export class PostsController {
 
   @ApiOperation({ summary: "Listar todas as postagens" })
   @Get()
-  @UseInterceptors(CacheInterceptor)
   findAll(@Query() findPostsQuery: FindPostsQueryDto) {
     return this.postsService.findAll(findPostsQuery);
   }
 
   @ApiOperation({ summary: "Listar detalhes de uma postagem específica" })
   @Get(":id")
-  @UseInterceptors(CacheInterceptor)
   findOne(@Param("id") id: string) {
     return this.postsService.findOne(id);
   }
