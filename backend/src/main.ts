@@ -31,6 +31,7 @@ async function bootstrap() {
       "API para gerenciamento e integração de dados da Casa Church, facilitando a administração de eventos, membros e recursos da comunidade."
     )
     .setVersion("1.0")
+    .addServer("/api")
     .addApiKey(
       {
         type: "apiKey",
