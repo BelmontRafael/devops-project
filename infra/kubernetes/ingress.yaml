@@ -4,11 +4,11 @@ metadata:
   name: casa-church-api-ingress
   namespace: casa-church
 spec:
-  ingressClassName: webapprouting.kubernetes.azure.com
+  ingressClassName: nginx
   rules:
     - http:
         paths:
-          - path: /api
+          - path: /
             pathType: Prefix
             backend:
               service:

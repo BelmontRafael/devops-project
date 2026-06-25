@@ -1,18 +1,19 @@
 ---
-- name: Deploy do frontend na VM da Azure
+- name: Deploy do frontend e gateway Nginx na VM da Azure
   hosts: frontend
   become: true
 
   vars:
     frontend_image: "{{ acr_login_server }}/casa-church-frontend:dev"
     frontend_container_name: casa-church-frontend
-    frontend_port: 80
+    frontend_port: 8080
+    gateway_site_name: casa-church-gateway
 
   tasks:
     - name: Validar variaveis obrigatorias
       fail:
-        msg: "Informe acr_name e acr_login_server usando -e."
-      when: acr_name is not defined or acr_login_server is not defined
+        msg: "Informe acr_name, acr_login_server e api_backend_url usando -e."
+      when: acr_name is not defined or acr_login_server is not defined or api_backend_url is not defined
 
     - name: Atualizar pacotes do sistema
       apt:
@@ -22,6 +23,7 @@
       apt:
         name:
           - docker.io
+          - nginx
           - curl
           - ca-certificates
         state: present
@@ -29,6 +31,12 @@
     - name: Garantir que o Docker esta ativo
       service:
         name: docker
+        state: started
+        enabled: yes
+
+    - name: Garantir que o Nginx esta ativo
+      service:
+        name: nginx
         state: started
         enabled: yes
 
@@ -57,12 +65,43 @@
         docker run -d \
           --name {{ frontend_container_name }} \
           --restart unless-stopped \
-          -p {{ frontend_port }}:80 \
+          -p 127.0.0.1:{{ frontend_port }}:80 \
           {{ frontend_image }}
 
-    - name: Validar frontend na VM
+    - name: Copiar configuracao do Nginx Gateway
+      template:
+        src: ../../gateway/nginx.conf.j2
+        dest: /etc/nginx/sites-available/{{ gateway_site_name }}
+        mode: "0644"
+
+    - name: Remover site padrao do Nginx
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Habilitar site do Gateway
+      file:
+        src: /etc/nginx/sites-available/{{ gateway_site_name }}
+        dest: /etc/nginx/sites-enabled/{{ gateway_site_name }}
+        state: link
+        force: yes
+
+    - name: Validar configuracao do Nginx
+      shell: nginx -t
+
+    - name: Reiniciar Nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Validar frontend local
       uri:
         url: http://127.0.0.1:{{ frontend_port }}
+        status_code: 200
+
+    - name: Validar API via Gateway
+      uri:
+        url: http://127.0.0.1/api/health
         status_code: 200
 
     - name: Exibir containers em execucao

@@ -7,6 +7,7 @@
     k8s_namespace: casa-church
     project_root: "{{ playbook_dir }}/../../.."
     manifest_dir: "{{ project_root }}/infra/kubernetes"
+    ingress_nginx_manifest_url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/cloud/deploy.yaml
 
   tasks:
     - name: Verificar acesso ao AKS
@@ -21,6 +22,12 @@
       fail:
         msg: "Crie {{ manifest_dir }}/secret.yaml a partir de secret.example.yaml antes do deploy."
       when: not secret_file.stat.exists
+
+    - name: Instalar Ingress Controller Nginx
+      shell: kubectl apply -f "{{ ingress_nginx_manifest_url }}"
+
+    - name: Aguardar Ingress Controller Nginx
+      shell: kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=180s
 
     - name: Aplicar Namespace
       shell: kubectl apply -f "{{ manifest_dir }}/namespace.yaml"
@@ -80,6 +87,14 @@
     - name: Exibir ingress criado
       debug:
         var: ingress_result.stdout_lines
+
+    - name: Verificar endpoint publico do Ingress Controller
+      shell: kubectl get svc ingress-nginx-controller -n ingress-nginx
+      register: ingress_controller_result
+
+    - name: Exibir endpoint publico do Ingress Controller
+      debug:
+        var: ingress_controller_result.stdout_lines
 
     - name: Validar health check da API no AKS
       shell: kubectl run curl-test -n "{{ k8s_namespace }}" --rm -i --image=curlimages/curl --restart=Never -- curl -s http://casa-church-api-service/health
