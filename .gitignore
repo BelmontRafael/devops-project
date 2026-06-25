@@ -18,6 +18,11 @@
 **/*.tfplan
 **/tfplan
 
+# Local environment files
+.env
+.env.*
+!.env.example
+
 # Kubernetes local secrets
 infra/kubernetes/**/*secret.yaml
 !infra/kubernetes/**/*secret.example.yaml

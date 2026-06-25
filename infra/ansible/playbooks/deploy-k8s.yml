@@ -56,6 +56,9 @@
     - name: Aplicar HPA da API
       shell: kubectl apply -f "{{ manifest_dir }}/hpa.yaml"
 
+    - name: Aguardar pods da API ficarem prontos
+      shell: kubectl wait pod -n "{{ k8s_namespace }}" -l app=casa-church-api --for=condition=Ready --timeout=240s
+
     - name: Verificar pods do namespace
       shell: kubectl get pods -n "{{ k8s_namespace }}"
       register: pods_result
