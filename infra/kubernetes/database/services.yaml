@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa-church-postgres-primary-headless
+  namespace: casa-church
+spec:
+  clusterIP: None
+  selector:
+    app: casa-church-postgres
+    role: primary
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa-church-postgres-primary
+  namespace: casa-church
+spec:
+  type: ClusterIP
+  selector:
+    app: casa-church-postgres
+    role: primary
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa-church-postgres-read-headless
+  namespace: casa-church
+spec:
+  clusterIP: None
+  selector:
+    app: casa-church-postgres
+    role: read
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: casa-church-postgres-read
+  namespace: casa-church
+spec:
+  type: ClusterIP
+  selector:
+    app: casa-church-postgres
+    role: read
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432

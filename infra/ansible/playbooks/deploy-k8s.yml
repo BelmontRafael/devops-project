@@ -49,6 +49,15 @@
     - name: Aplicar LimitRange
       shell: kubectl apply -f "{{ manifest_dir }}/limit-range.yaml"
 
+    - name: Aplicar manifests do banco PostgreSQL
+      shell: kubectl apply -f "{{ manifest_dir }}/database"
+
+    - name: Aguardar PostgreSQL primario ficar pronto
+      shell: kubectl rollout status statefulset/casa-church-postgres-primary -n "{{ k8s_namespace }}" --timeout=240s
+
+    - name: Aguardar replicas de leitura do PostgreSQL ficarem prontas
+      shell: kubectl rollout status statefulset/casa-church-postgres-read -n "{{ k8s_namespace }}" --timeout=240s
+
     - name: Aplicar ConfigMap da API
       shell: kubectl apply -f "{{ manifest_dir }}/configmap.yaml"
 
