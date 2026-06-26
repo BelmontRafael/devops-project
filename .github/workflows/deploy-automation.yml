@@ -194,3 +194,19 @@ jobs:
           target: ${{ secrets.GATEWAY_HOM_URL }}
           allow_issue_writing: false
           fail_action: false
+
+  notify:
+    name: Notificacao
+    runs-on: ubuntu-latest
+    needs: [tests, build_push, deploy, dast]
+    if: always()
+
+    steps:
+      - name: Exibir resumo da pipeline
+        run: |
+          echo "Resumo da pipeline:"
+          echo "Testes unitarios: ${{ needs.tests.result }}"
+          echo "Build, Trivy e push: ${{ needs.build_push.result }}"
+          echo "Deploy com Ansible: ${{ needs.deploy.result }}"
+          echo "DAST com OWASP ZAP: ${{ needs.dast.result }}"
+          echo "Pipeline finalizada."
