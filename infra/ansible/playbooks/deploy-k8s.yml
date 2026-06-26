@@ -5,6 +5,7 @@
 
   vars:
     k8s_namespace: casa-church
+    gateway_public_ip: ""
     project_root: "{{ playbook_dir }}/../../.."
     manifest_dir: "{{ project_root }}/infra/kubernetes"
     ingress_nginx_manifest_url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/cloud/deploy.yaml
@@ -28,6 +29,16 @@
 
     - name: Aguardar Ingress Controller Nginx
       shell: kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=180s
+
+    - name: Validar IP publico do Gateway
+      fail:
+        msg: "Informe gateway_public_ip usando -e para restringir o Ingress Controller ao Gateway Nginx."
+      when: gateway_public_ip | length == 0
+
+    - name: Restringir Ingress Controller ao Gateway Nginx da VM
+      shell: >
+        kubectl patch svc ingress-nginx-controller -n ingress-nginx --type merge
+        -p '{"spec":{"loadBalancerSourceRanges":["{{ gateway_public_ip }}/32"]}}'
 
     - name: Aplicar Namespace
       shell: kubectl apply -f "{{ manifest_dir }}/namespace.yaml"
