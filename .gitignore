@@ -29,3 +29,6 @@ infra/kubernetes/**/*secret.yaml
 
 # Ansible local inventory
 infra/ansible/hosts.ini
+
+# Test caches
+**/.jest-cache/
