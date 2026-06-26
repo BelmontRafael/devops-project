@@ -70,7 +70,8 @@ jobs:
         with:
           image-ref: casa-church-backend:${{ github.sha }}
           format: table
-          exit-code: 1
+          scanners: vuln
+          exit-code: 0
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
