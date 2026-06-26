@@ -103,7 +103,7 @@
         var: ingress_controller_result.stdout_lines
 
     - name: Validar health check da API no AKS
-      shell: kubectl run curl-test -n "{{ k8s_namespace }}" --rm -i --image=curlimages/curl --restart=Never -- curl -s http://casa-church-api-service/health
+      shell: kubectl run curl-test -n default --rm -i --image=curlimages/curl --restart=Never -- curl -s http://casa-church-api-service.{{ k8s_namespace }}.svc.cluster.local/health
       register: api_health_result
 
     - name: Exibir resultado do health check
