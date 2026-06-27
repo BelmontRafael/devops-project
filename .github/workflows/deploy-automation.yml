@@ -1,4 +1,4 @@
-name: Deploy Automation
+name: Casa Church CI/CD
 
 on:
   workflow_dispatch:
@@ -115,7 +115,7 @@ jobs:
           image-ref: casa-church-backend:${{ github.sha }}
           format: table
           scanners: vuln
-          exit-code: 0
+          exit-code: 1
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
