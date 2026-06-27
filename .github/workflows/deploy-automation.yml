@@ -33,10 +33,54 @@ jobs:
           npm test
           npm run build
 
+  sonar:
+    name: SonarQube Quality Gate
+    runs-on: ubuntu-latest
+    needs: tests
+
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Subir SonarQube em container
+        run: |
+          sudo sysctl -w vm.max_map_count=262144
+          docker run -d --name sonarqube -p 9000:9000 sonarqube:lts-community
+          sleep 120
+
+      - name: Criar token temporario do SonarQube
+        run: |
+          SONAR_PASSWORD='Admin12345!'
+
+          curl -fsS -u admin:admin -X POST http://localhost:9000/api/users/change_password \
+            -d "login=admin" \
+            -d "previousPassword=admin" \
+            -d "password=${SONAR_PASSWORD}"
+
+          SONAR_TOKEN=$(curl -fsS -u "admin:${SONAR_PASSWORD}" -X POST http://localhost:9000/api/user_tokens/generate \
+            -d "name=github-actions-${GITHUB_RUN_ID}" | sed -E 's/.*"token":"([^"]+)".*/\1/')
+
+          echo "SONAR_TOKEN=${SONAR_TOKEN}" >> "$GITHUB_ENV"
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_HOST_URL: http://localhost:9000
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+
+      - name: SonarQube Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@v1.2.0
+        timeout-minutes: 5
+        env:
+          SONAR_HOST_URL: http://localhost:9000
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+
   build_push:
     name: Build, Trivy e push das imagens
     runs-on: ubuntu-latest
-    needs: tests
+    needs: sonar
 
     steps:
       - name: Baixar codigo
@@ -198,7 +242,7 @@ jobs:
   notify:
     name: Notificacao
     runs-on: ubuntu-latest
-    needs: [tests, build_push, deploy, dast]
+    needs: [tests, sonar, build_push, deploy, dast]
     if: always()
 
     steps:
@@ -206,6 +250,7 @@ jobs:
         run: |
           echo "Resumo da pipeline:"
           echo "Testes unitarios: ${{ needs.tests.result }}"
+          echo "SonarQube Quality Gate: ${{ needs.sonar.result }}"
           echo "Build, Trivy e push: ${{ needs.build_push.result }}"
           echo "Deploy com Ansible: ${{ needs.deploy.result }}"
           echo "DAST com OWASP ZAP: ${{ needs.dast.result }}"
