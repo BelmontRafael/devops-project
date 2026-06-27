@@ -5,8 +5,8 @@ Este repositorio contem a entrega final da disciplina de Gerencia de Configuraç
 ## Repositorios Originais
 
 ```text
-Backend original:  
-Frontend original: 
+Backend original: https://github.com/mendeslian/casa-church-server 
+Frontend original: https://github.com/mendeslian/casa-church-web-app
 ```
 
 ## Visao Geral
@@ -425,8 +425,6 @@ O workflow esta configurado com acionamento manual:
 on:
   workflow_dispatch:
 ```
-
-Essa decisao evita deploys desnecessarios em ambiente cloud pago. Cada execucao da pipeline pode reconstruir imagens, publicar no ACR, reiniciar pods no AKS, atualizar a VM e executar DAST.
 
 Etapas da pipeline:
 
