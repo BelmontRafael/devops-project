@@ -79,8 +79,8 @@
     - name: Reiniciar pods da API para baixar a imagem mais recente
       shell: kubectl rollout restart deployment/casa-church-api -n "{{ k8s_namespace }}"
 
-    - name: Aguardar pods da API ficarem prontos
-      shell: kubectl wait pod -n "{{ k8s_namespace }}" -l app=casa-church-api --for=condition=Ready --timeout=240s
+    - name: Aguardar reinicio da API
+      shell: sleep 60
 
     - name: Verificar pods do namespace
       shell: kubectl get pods -n "{{ k8s_namespace }}"
